@@ -36,6 +36,11 @@
 	position: relative;
 	top: -2px;
 	left: 5px;
+	display: inline-block;
+}
+.addapt-outer-legacy .addapt-selected-option{
+	top: 5px;
+	left: 8px;
 }
 /*When border radius OR box-shadow are not supported*/
 /*BEGIN addapt-outer-legacy section*/
@@ -48,6 +53,7 @@
     top:-5px;
     overflow: visible;
     background-color: transparent;
+    height: 34px;
 }
 .addapt-outer-legacy:focus
 {
@@ -113,6 +119,10 @@
     background-color: #fff;
     background-color: rgba(255,255,255,0.9);
 }
+.addapt-outer-legacy .addapt-options-list{
+	left: -34px;
+	top: 30px;
+}
 .addapt-options-list-closed {
     max-height: 0px;
 }
@@ -127,3 +137,4 @@
 .addapt-options-list-item:hover {
     background-color: orange;
 }
+

@@ -125,14 +125,17 @@
             element.addEventListener(featuresSupported.transitionEndEventName, closeOptionListTransitionEnd, true);
             }
             else{
-            	optionList.css('z-index','1000');
+            	optionList.parent().css('z-index','1000');
+            	optionList.addClass('addapt-options-list-no-border');
             }
             optionList.addClass('addapt-options-list-closed');
     };
     var openOptionList = function (optionList) {
     	// Check to see if transitions are supported, if not then jquery animate will be used.
     	optionList = $(optionList);
+    	if(featuresSupported.transition){
 	        optionList.get()[0].removeEventListener(featuresSupported.transitionEndEventName, closeOptionListTransitionEnd, true);
+	       }
 	        var parent = optionList.parent();
 	        parent.css('z-index','1001');
 	        optionList.removeClass('addapt-options-list-closed addapt-options-list-no-border');
@@ -204,8 +207,9 @@
             var right = $('<span>').addClass('addapt-outer-legacy-right').appendTo($('body'));
             var rightWidth = right.width();
             right.remove();
-            var legacyDivs = left.after($('<span>').addClass('addapt-outer-legacy-middle').css({ 'width':  outerDivWidth - leftWidth - rightWidth + 'px', 'left': leftWidth + 'px' })).after(right);
+            var legacyDivs = left.after($('<span>').addClass('addapt-outer-legacy-middle').css({ 'width':  origWidth-leftWidth-rightWidth, 'left': leftWidth + 'px' })).after(right);
             outerDiv.addClass('addapt-outer-legacy').prepend(legacyDivs);
+            outerDiv.css('width', origWidth);
         }
         // Make clicking the outer div click also fire the arrow.
         outerDiv.click(function(){
