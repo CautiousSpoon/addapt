@@ -24,7 +24,9 @@
     var pluginName = 'addapt',
         document = window.document,
         defaults = {
-            propertyName: "value"
+            propertyName: "value",
+            topClearance: 5,
+            leftClearance: 5
         };
     // Plugin functions     
     // CSS support detection
@@ -108,23 +110,33 @@
         return options;
     };
     var closeOptionListTransitionEnd = function (event) {
+    	// Get the option list.
         element = event.target;
+        // Add the class to remove the border so that changing the max height to 0 hides it properly.
         $(element).addClass('addapt-options-list-no-border');
+        // Get the parent element to change the z index back down 1 point
+        var parent = $(element).parent();
+        parent.css('z-index','-=1');
     };
     var closeOptionList = function (optionList) {
         optionList = $(optionList);
-        if (featuresSupported.transition) {
             var element = optionList.get()[0];
+            if(featuresSupported.transition){
             element.addEventListener(featuresSupported.transitionEndEventName, closeOptionListTransitionEnd, true);
+            }
+            else{
+            	optionList.css('z-index','1000');
+            }
             optionList.addClass('addapt-options-list-closed');
-        }
-        else {
-        }
     };
     var openOptionList = function (optionList) {
-        optionList = $(optionList);
-        optionList.get()[0].removeEventListener(featuresSupported.transitionEndEventName, closeOptionListTransitionEnd, true);
-        optionList.removeClass('addapt-options-list-closed addapt-options-list-no-border');
+    	// Check to see if transitions are supported, if not then jquery animate will be used.
+    	optionList = $(optionList);
+	        optionList.get()[0].removeEventListener(featuresSupported.transitionEndEventName, closeOptionListTransitionEnd, true);
+	        var parent = optionList.parent();
+	        parent.css('z-index','1001');
+	        optionList.removeClass('addapt-options-list-closed addapt-options-list-no-border');
+
     };
     var listItemClickHandler = function (listItem, originalObject, selectedTextElement, optionList) {
         listItem = $(listItem);
@@ -158,28 +170,33 @@
         var origWidth = $this.outerWidth(true);
 
         // Create a div after.
-        var outerDiv = $('<div id="addapt-' + $this.attr('id') + '"></div>').addClass('addapt-outer').css(
-            {
-                'height': origHeight,
-                'width': origWidth
-            }
-            ).attr('tabindex', '0');// Make the div focusable
+        var outerDiv = $('<div id="addapt-' + $this.attr('id') + '"></div>').addClass('addapt-outer').attr('tabindex', '0');// Make the div focusable
         //Create the arrow and text.
         var selectBoxData = getSelectBoxData($this);
+        // Make the arrow.
         var arrowDiv = $('<div></div>').addClass('addapt-arrow').attr('id', 'addapt-arrow-' + $this.attr('id'));
-        var selectedValueTextSpan = $('<span></span>').addClass('addapt-selected-option').html(selectBoxData[$this.val()].text);
+        // This element will show the selected value.
+        var selectedValueTextSpan = $('<span></span>').addClass('addapt-selected-option').html(selectBoxData[$this.val()].text).width(origWidth-10);
+        // Append the selected value span to the outer div
         outerDiv.append(selectedValueTextSpan);
+        // Append the arrow to the outer div
         outerDiv.append(arrowDiv);
+        // Create the option list.
         var optionList = createOptionsList(selectBoxData).width($this.width() - 10).attr('id', 'addapt-option-list-' + $this.attr('id'));
+        //Append the option list.
         outerDiv.append(optionList);
         $this.after(outerDiv);
         // One it is appended we can get the real length
-        if (!featuresSupported.borderRadius && featuresSupported.boxShadow) {
+        if (featuresSupported.borderRadius && featuresSupported.boxShadow) {
+        	// This means that the browser supports features that make the whole thing stylable without images.
+        	// Could make the requirements for no images configurable.
+        	
+        	// Add the appropriate classes to the outer div for a modern browser.
             outerDiv.addClass('addapt-outer-box-shadow addapt-outer-border-radius');
+            // Set the height and width of the outer div. Aiming for the same height and width as the select box that we are simulating.
+            outerDiv.height(origHeight-10).width(origWidth-10);
         }
         else {
-            var outerDivWidth = outerDiv.width();
-            console.log(outerDivWidth);
             // Create all of the legacy objects.
             var left = $('<span>').addClass('addapt-outer-legacy-left').appendTo($('body'));
             var leftWidth = left.outerWidth();
@@ -190,17 +207,21 @@
             var legacyDivs = left.after($('<span>').addClass('addapt-outer-legacy-middle').css({ 'width':  outerDivWidth - leftWidth - rightWidth + 'px', 'left': leftWidth + 'px' })).after(right);
             outerDiv.addClass('addapt-outer-legacy').prepend(legacyDivs);
         }
-        // Setup the click handler on the arrow.
-        arrowDiv.click(function () {
-            optionList.hasClass('addapt-options-list-closed') ? openOptionList(optionList) : closeOptionList(optionList);
+        // Make clicking the outer div click also fire the arrow.
+        outerDiv.click(function(){
+        	optionList.hasClass('addapt-options-list-closed') ? openOptionList(optionList) : closeOptionList(optionList);
         });
+        // Set the blur handler on the 
         outerDiv.blur(function () {
             closeOptionList(optionList);
         });
+        // Set the click handler on the list items.
         $('li', optionList).click(function () {
             listItemClickHandler(this, $this, selectedValueTextSpan, optionList);
         });
         outerDiv.focus();
+        $this.hide();
+        return $this;
     };
 
     // A really lightweight plugin wrapper around the constructor, 

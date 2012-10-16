@@ -1,4 +1,8 @@
-﻿.addapt-outer {
+﻿.addapt-outer *
+{
+	font-family: 'Ubuntu', sans-serif;
+}
+.addapt-outer {
     z-index: 1001;
     border: 1px solid #CCC;
     display: inline-block;
@@ -7,14 +11,15 @@
     background-color: #FFF;
     padding: 5px;
     outline: none;
+    top: 7px;
+    margin: 0px 5px;
 }
-    .addapt-outer *:focus {
+.addapt-outer*:focus {
         outline: none;
     }
 .addapt-outer:focus {
     box-shadow: inset 0 0 10px #CCC, 0 0 5px orange;
     outline: none;
-     -webkit-user-modify: read-write-plaintext-only;
 }
 .addapt-outer-legacy:focus {
     /*Need to add the background images for focus here.*/
@@ -24,6 +29,13 @@
 }
 .addapt-outer-border-radius {
     border-radius: 5px;
+}
+/* Best to set the position of this box in css */
+.addapt-selected-option
+{
+	position: relative;
+	top: -2px;
+	left: 5px;
 }
 /*When border radius OR box-shadow are not supported*/
 /*BEGIN addapt-outer-legacy section*/
@@ -35,6 +47,12 @@
     position: relative;
     top:-5px;
     overflow: visible;
+    background-color: transparent;
+}
+.addapt-outer-legacy:focus
+{
+	box-shadow: none;
+	outline: none;
 }
 .addapt-outer-legacy-left, .addapt-outer-legacy-right{
     height: 34px;
@@ -60,13 +78,15 @@
 }
 /*END addapt-outer-legacy section*/
 .addapt-arrow {
-    width: 19px;
-    height: 21px;
+    width: 16px;
+    height: 16px;
     background-color: #FFF;
     position:absolute;
-    right: 3px;
+    right: 5px;
     top: 4px;
     cursor: pointer;
+    background-repeat: no-repeat;
+    background-position: center center;
     background-image: url('../Images/arrow.png');
 }
 .addapt-outer-legacy .addapt-arrow{
@@ -76,32 +96,34 @@
 .addapt-options-list {
     list-style: none;
     height: auto;
-    max-height: 500px;
+    max-height: 150px;
     overflow: hidden;
-    border: 1px solid #000;
-    -webkit-transition: height .5s ease-in-out;
-    -moz-transition: height .5s ease-in-out;
-    -o-transition: height .5s ease-in-out;
-    -ms-transition: height .5s ease-in-out;
-    transition: height .5s ease-in-out;
+    border: 1px solid #CCC;
+    border-top: none;
+    -webkit-transition: max-height .5s ease-in-out;
+    -moz-transition: max-height .5s ease-in-out;
+    -o-transition: max-height .5s ease-in-out;
+    -ms-transition: max-height .5s ease-in-out;
+    transition: max-height .5s ease-in-out;
     position: absolute;
     left: 3px;
-    top: 11px;
+    top: 10px;
     padding: 0px;
     overflow-y: scroll;
     background-color: #fff;
     background-color: rgba(255,255,255,0.9);
 }
 .addapt-options-list-closed {
-    height: 0px;
+    max-height: 0px;
 }
 .addapt-options-list-no-border {
     border:0px;
 }
 .addapt-options-list-item {
     height: 30px;
+    padding-left: 5px;
     cursor: pointer;
 }
 .addapt-options-list-item:hover {
-    background-color: #CCC;
+    background-color: orange;
 }

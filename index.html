@@ -11,12 +11,47 @@
 		<meta name="description" content="Addapt.js Demo Page" />
 		<meta name="author" content="James Collard" />
 
-		<meta name="viewport" content="width=device-width; initial-scale=1.0" />
-
+		<link rel="stylesheet" href="Style/addapt.css"/>
+		<link href='http://fonts.googleapis.com/css?family=Ubuntu:300,400,700' rel='stylesheet' type='text/css'>
+		<script src="Javascript/jquery.js" type="text/javascript"></script>
+		<script src="Javascript/modernizr.js" type="text/javascript"></script>
+		<script src="Javascript/addapt.js" type="text/javascript"></script>
+		<script type="text/javascript">
+		$(document).ready(function(){
+			$('#select1').addapt();
+			$('#select2').addapt();
+		});
+		</script>
+		<style>
+			#select1{
+				width: 150px;
+			}
+			#select2
+			{
+				width: 150px;			
+			}
+			
+		</style>
 	</head>
 
 	<body>
 		<select id="select1">
+			<option value="1">Thorin</option>
+			<option value="2">Fili</option>
+			<option value="3">Kili</option>
+			<option value="4">Oin</option>
+			<option value="5">Gloin</option>
+			<option value="6">Dwalin</option>
+			<option value="7">Balin</option>
+			<option value="8">Bifur</option>
+			<option value="9">Bofur</option>
+			<option value="10">Bombur</option>
+			<option value="11">Dori</option>
+			<option value="12">Nori</option>
+			<option value="13">Ori</option>
+		</select>
+		<br><br><br>
+		<select id="select2">
 			<option value="1">One</option>
 			<option value="2">Two</option>
 			<option value="3">Three</option>
