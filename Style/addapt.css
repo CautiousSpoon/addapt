@@ -1,140 +1,42 @@
-﻿.addapt-outer *
+﻿.addapt-outer
 {
-	font-family: 'Ubuntu', sans-serif;
+	background-color: #000;
 }
-.addapt-outer {
-    z-index: 1001;
-    border: 1px solid #CCC;
-    display: inline-block;
-    position: relative;
-    overflow: visible;
-    background-color: #FFF;
-    padding: 5px;
-    outline: none;
-    top: 7px;
-    margin: 0px 5px;
-}
-.addapt-outer*:focus {
-        outline: none;
-    }
-.addapt-outer:focus {
-    box-shadow: inset 0 0 10px #CCC, 0 0 5px orange;
-    outline: none;
-}
-.addapt-outer-legacy:focus {
-    /*Need to add the background images for focus here.*/
-}
-.addapt-outer-box-shadow {
-    box-shadow: inset 0 0 10px #CCC;
-}
-.addapt-outer-border-radius {
-    border-radius: 5px;
-}
-/* Best to set the position of this box in css */
-.addapt-selected-option
+.addapt-legacy-outer
 {
 	position: relative;
-	top: -2px;
-	left: 5px;
-	display: inline-block;
+	background-color: transparent;
 }
-.addapt-outer-legacy .addapt-selected-option{
-	top: 5px;
-	left: 8px;
-}
-/*When border radius OR box-shadow are not supported*/
-/*BEGIN addapt-outer-legacy section*/
-.addapt-outer-legacy {
-    border:0px;
-    padding:0px;
-    z-index: 1001;
-    display: inline-block;
-    position: relative;
-    top:-5px;
-    overflow: visible;
-    background-color: transparent;
-    height: 34px;
-}
-.addapt-outer-legacy:focus
+.addapt-legacy-left
 {
-	box-shadow: none;
-	outline: none;
+	background-image: url('../Images/addapt-left.png');
+	background-repeat: no-repeat;
+	float:left;
 }
-.addapt-outer-legacy-left, .addapt-outer-legacy-right{
-    height: 34px;
-    width: 7px;
-    background-repeat: no-repeat;
-    background-position: center center;
-    position: absolute;
-    top:0px;
+.addapt-legacy-right
+{
+	background-image: url('../Images/addapt-right.png');
+	background-repeat: no-repeat;
+	float:left;
 }
-.addapt-outer-legacy-left {
-    left: 0px;
-    background-image: url('../Images/addapt-left.png');
+.addapt-legacy-middle
+{
+	background-image: url('../Images/addapt-middle.png');
+	background-repeat: repeat-x;
+	float:left;
 }
-.addapt-outer-legacy-right {
-    right:0px;
-    background-image: url('../Images/addapt-right.png');
+.addapt-legacy-selected-item
+{
+	position: relative;
+	top: 5px;
+	left: 10px;
+	background-color: #ccc;
+	display: block;
 }
-.addapt-outer-legacy-middle {
-    height: 34px;
-    position: absolute;
-    top:0px;
-    background-image: url('../Images/addapt-middle.png');
+.addapt-legacy-arrow
+{
+	position: absolute;
+	background-image: url('../Images/arrow.png');
+	background-color: transparent;
+	cursor: pointer;
 }
-/*END addapt-outer-legacy section*/
-.addapt-arrow {
-    width: 16px;
-    height: 16px;
-    background-color: #FFF;
-    position:absolute;
-    right: 5px;
-    top: 4px;
-    cursor: pointer;
-    background-repeat: no-repeat;
-    background-position: center center;
-    background-image: url('../Images/arrow.png');
-}
-.addapt-outer-legacy .addapt-arrow{
-    right: 8px;
-    top: 8px;
-}
-.addapt-options-list {
-    list-style: none;
-    height: auto;
-    max-height: 150px;
-    overflow: hidden;
-    border: 1px solid #CCC;
-    border-top: none;
-    -webkit-transition: max-height .5s ease-in-out;
-    -moz-transition: max-height .5s ease-in-out;
-    -o-transition: max-height .5s ease-in-out;
-    -ms-transition: max-height .5s ease-in-out;
-    transition: max-height .5s ease-in-out;
-    position: absolute;
-    left: 3px;
-    top: 10px;
-    padding: 0px;
-    overflow-y: scroll;
-    background-color: #fff;
-    background-color: rgba(255,255,255,0.9);
-}
-.addapt-outer-legacy .addapt-options-list{
-	left: -34px;
-	top: 30px;
-}
-.addapt-options-list-closed {
-    max-height: 0px;
-}
-.addapt-options-list-no-border {
-    border:0px;
-}
-.addapt-options-list-item {
-    height: 30px;
-    padding-left: 5px;
-    cursor: pointer;
-}
-.addapt-options-list-item:hover {
-    background-color: orange;
-}
-

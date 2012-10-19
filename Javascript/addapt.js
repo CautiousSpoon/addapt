@@ -24,9 +24,17 @@
     var pluginName = 'addapt',
         document = window.document,
         defaults = {
-            propertyName: "value",
-            topClearance: 5,
-            leftClearance: 5
+            legacyOptions: {
+            	topClearance: 5,
+            	leftClearance: 5,
+            	imageHeight: 34,
+            	leftWidth: 7,
+            	rightWidth: 7,
+            	cssPrefix: 'addapt-legacy-'
+            },
+            cssPrefix: 'addapt-',
+            arrowHeight: 16,
+            arrowWidth: 16
         };
     // Plugin functions     
     // CSS support detection
@@ -91,61 +99,78 @@
         delete div;
     })();
     //  Functions
-    var getSelectBoxData = function (element) {
-        var optionData = {};
-        var options = $('option', element).get();
-        for (key in options) {
-            optionData[options[key].value] = {
-                text: options[key].innerHTML,
-                title: options[key].title
-            };
-        }
-        return optionData;
+    var GenerateTargetGeometry = function(element, legacyRequired,options){
+    	var elementWidth = element.outerWidth();
+		var elementHeight = element.outerHeight();
+		var geometry = new Object();
+		// Old Browser
+		if(legacyRequired){
+			// Seperate these so that they can be used in order sequentially relying on some.
+				var wrapper = {
+					height: options.legacyOptions.imageHeight,
+					width: elementWidth + (options.legacyOptions.leftClearance*2)
+				};
+				var left = {
+					height: options.legacyOptions.imageHeight,
+					width: options.legacyOptions.leftWidth
+				};
+				var right = {
+					height: options.legacyOptions.imageHeight,
+					width: options.legacyOptions.rightWidth
+				}; 
+				var middle = {
+					height: options.legacyOptions.imageHeight,
+					width: elementWidth - options.legacyOptions.leftWidth - options.legacyOptions.rightWidth + (options.legacyOptions.leftClearance*2)
+				};
+				var arrow = {
+					top: (options.legacyOptions.imageHeight/2) - 8,
+					right: options.legacyOptions.leftClearance + 8,
+					height: 16,
+					width: 16
+				};
+				var selectedItem ={
+					height: options.legacyOptions.imageHeight - (options.legacyOptions.topClearance*2),
+					width: elementWidth - 10 - 16
+				};
+				geometry.wrapper = wrapper;
+				geometry.left = left;
+				geometry.right = right;
+				geometry.middle = middle;
+				geometry.arrow = arrow;
+				geometry.selectedItem = selectedItem;
+		}
+		// Modern Browser
+		else{
+			
+		}
+		return geometry;
     };
-    var createOptionsList = function (data) {
-        var options = $('<ul></ul>').addClass('addapt-options-list');
-        for (key in data) {
-            options.append($('<li>').addClass('addapt-options-list-item').val(key).html(data[key].text));
-        }
-        return options;
+    var GenerateWrapper = function(geometry, legacy, options){
+    	var wrapperElement = $('<div>').addClass(legacy ? options.legacyOptions.cssPrefix+'outer' : options.cssPrefix+'outer');
+    	wrapperElement.height(geometry.wrapper.height).width(geometry.wrapper.width);
+    	console.log(legacy);
+    	if(legacy){
+    		wrapperElement.append(
+    			$('<div>').addClass(options.legacyOptions.cssPrefix+'left').height(geometry.left.height).width(geometry.left.width)
+    		).append(
+    			$('<div>').addClass(options.legacyOptions.cssPrefix+'middle').height(geometry.middle.height).width(geometry.middle.width)
+    		).append(
+    			$('<div>').addClass(options.legacyOptions.cssPrefix+'right').height(geometry.right.height).width(geometry.right.width)
+    		);
+    	}
+    	return wrapperElement;
     };
-    var closeOptionListTransitionEnd = function (event) {
-    	// Get the option list.
-        element = event.target;
-        // Add the class to remove the border so that changing the max height to 0 hides it properly.
-        $(element).addClass('addapt-options-list-no-border');
-        // Get the parent element to change the z index back down 1 point
-        var parent = $(element).parent();
-        parent.css('z-index','-=1');
-    };
-    var closeOptionList = function (optionList) {
-        optionList = $(optionList);
-            var element = optionList.get()[0];
-            if(featuresSupported.transition){
-            element.addEventListener(featuresSupported.transitionEndEventName, closeOptionListTransitionEnd, true);
-            }
-            else{
-            	optionList.parent().css('z-index','1000');
-            	optionList.addClass('addapt-options-list-no-border');
-            }
-            optionList.addClass('addapt-options-list-closed');
-    };
-    var openOptionList = function (optionList) {
-    	// Check to see if transitions are supported, if not then jquery animate will be used.
-    	optionList = $(optionList);
-    	if(featuresSupported.transition){
-	        optionList.get()[0].removeEventListener(featuresSupported.transitionEndEventName, closeOptionListTransitionEnd, true);
-	       }
-	        var parent = optionList.parent();
-	        parent.css('z-index','1001');
-	        optionList.removeClass('addapt-options-list-closed addapt-options-list-no-border');
-
-    };
-    var listItemClickHandler = function (listItem, originalObject, selectedTextElement, optionList) {
-        listItem = $(listItem);
-        originalObject.val(listItem.attr('value'));
-        selectedTextElement.html(listItem.html()).attr('value', listItem.attr('value'));
-        closeOptionList(optionList);
+    var GenerateArrow = function(geometry, legacy, options){
+    	var arrow = $('<div>').addClass((legacy ? options.legacyOptions.cssPrefix : options.cssPrefix)+'arrow');
+    	console.log(geometry);
+    	arrow.height(geometry.arrow.height).width(geometry.arrow.width).css({'top': geometry.arrow.top,'right': geometry.arrow.right });
+    	return arrow;
+    }
+    var GenerateSelectedItemSpan = function(geometry, legacy, options){
+    	// 16 here is the arrow, make this configurable
+    	var span = $('<div>').addClass((legacy ? options.legacyOptions.cssPrefix : options.cssPrefix)+'selected-item');
+    	span.height(geometry.selectedItem.height).width(geometry.selectedItem.width);
+    	return span;
     };
     // The actual plugin constructor
     function Plugin(element, options) {
@@ -164,67 +189,20 @@
     }
 
     Plugin.prototype.init = function () {
+    	var legacy = !featuresSupported.borderRadius || !featuresSupported.boxShadow;
+    	legacy = true;
         // Place initialization logic here
         // You already have access to the DOM element and the options via the instance, 
         // e.g., this.element and this.options
         var $this = $(this.element);
         // Get the original geometry
-        var origHeight = $this.outerHeight(true);
-        var origWidth = $this.outerWidth(true);
-
-        // Create a div after.
-        var outerDiv = $('<div id="addapt-' + $this.attr('id') + '"></div>').addClass('addapt-outer').attr('tabindex', '0');// Make the div focusable
-        //Create the arrow and text.
-        var selectBoxData = getSelectBoxData($this);
-        // Make the arrow.
-        var arrowDiv = $('<div></div>').addClass('addapt-arrow').attr('id', 'addapt-arrow-' + $this.attr('id'));
-        // This element will show the selected value.
-        var selectedValueTextSpan = $('<span></span>').addClass('addapt-selected-option').html(selectBoxData[$this.val()].text).width(origWidth-10);
-        // Append the selected value span to the outer div
-        outerDiv.append(selectedValueTextSpan);
-        // Append the arrow to the outer div
-        outerDiv.append(arrowDiv);
-        // Create the option list.
-        var optionList = createOptionsList(selectBoxData).width($this.width() - 10).attr('id', 'addapt-option-list-' + $this.attr('id'));
-        //Append the option list.
-        outerDiv.append(optionList);
-        $this.after(outerDiv);
-        // One it is appended we can get the real length
-        if (featuresSupported.borderRadius && featuresSupported.boxShadow) {
-        	// This means that the browser supports features that make the whole thing stylable without images.
-        	// Could make the requirements for no images configurable.
-        	
-        	// Add the appropriate classes to the outer div for a modern browser.
-            outerDiv.addClass('addapt-outer-box-shadow addapt-outer-border-radius');
-            // Set the height and width of the outer div. Aiming for the same height and width as the select box that we are simulating.
-            outerDiv.height(origHeight-10).width(origWidth-10);
-        }
-        else {
-            // Create all of the legacy objects.
-            var left = $('<span>').addClass('addapt-outer-legacy-left').appendTo($('body'));
-            var leftWidth = left.outerWidth();
-            left.remove();
-            var right = $('<span>').addClass('addapt-outer-legacy-right').appendTo($('body'));
-            var rightWidth = right.width();
-            right.remove();
-            var legacyDivs = left.after($('<span>').addClass('addapt-outer-legacy-middle').css({ 'width':  origWidth-leftWidth-rightWidth, 'left': leftWidth + 'px' })).after(right);
-            outerDiv.addClass('addapt-outer-legacy').prepend(legacyDivs);
-            outerDiv.css('width', origWidth);
-        }
-        // Make clicking the outer div click also fire the arrow.
-        outerDiv.click(function(){
-        	optionList.hasClass('addapt-options-list-closed') ? openOptionList(optionList) : closeOptionList(optionList);
-        });
-        // Set the blur handler on the 
-        outerDiv.blur(function () {
-            closeOptionList(optionList);
-        });
-        // Set the click handler on the list items.
-        $('li', optionList).click(function () {
-            listItemClickHandler(this, $this, selectedValueTextSpan, optionList);
-        });
-        outerDiv.focus();
-        $this.hide();
+        var geometry = GenerateTargetGeometry($this, legacy ,this.options);
+        var wrapper = GenerateWrapper(geometry, legacy, this.options);
+        var selectedItemSpan = GenerateSelectedItemSpan(geometry, legacy, this.options);
+        var arrow = GenerateArrow(geometry, legacy, this.options);
+        wrapper.append(selectedItemSpan);
+        wrapper.append(arrow);
+        $('body').append(wrapper);
         return $this;
     };
 
