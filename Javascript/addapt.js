@@ -30,11 +30,17 @@
             	imageHeight: 34,
             	leftWidth: 7,
             	rightWidth: 7,
-            	cssPrefix: 'addapt-legacy-'
+            	cssPrefix: 'addapt-legacy-',
+            	paddingLeft: 10,
+            	paddingRight: 10,
+            	paddingTop: 5,
+            	paddingLeft: 10
             },
             cssPrefix: 'addapt-',
-            arrowHeight: 16,
-            arrowWidth: 16
+            arrow: {
+            	height: 16,
+            	width: 16
+            }
         };
     // Plugin functions     
     // CSS support detection
@@ -123,21 +129,34 @@
 					width: elementWidth - options.legacyOptions.leftWidth - options.legacyOptions.rightWidth + (options.legacyOptions.leftClearance*2)
 				};
 				var arrow = {
-					top: (options.legacyOptions.imageHeight/2) - 8,
-					right: options.legacyOptions.leftClearance + 8,
-					height: 16,
-					width: 16
+					// What is 8 here?
+					top: (options.legacyOptions.imageHeight/2) - (options.arrow.height/2),
+					// What is 8 here?
+					right: options.legacyOptions.leftClearance + (options.arrow.width/2),
+					// Get these from the options
+					height: options.arrow.height,
+					width: options.arrow.width
 				};
 				var selectedItem ={
 					height: options.legacyOptions.imageHeight - (options.legacyOptions.topClearance*2),
-					width: elementWidth - 10 - 16
+					// What are 10 here???
+					// Padding
+					width: elementWidth - (options.legacyOptions.paddingLeft) - (options.legacyOptions.leftClearance*2) - arrow.width,
+					left: options.legacyOptions.paddingLeft,
+					top: options.legacyOptions.paddingTop
 				};
+				var dropDownSelection = {
+					width: selectedItem.width,
+					top: wrapper.height - options.legacyOptions.topClearance,
+					left: selectedItem.left
+				}
 				geometry.wrapper = wrapper;
 				geometry.left = left;
 				geometry.right = right;
 				geometry.middle = middle;
 				geometry.arrow = arrow;
 				geometry.selectedItem = selectedItem;
+				geometry.dropDownSelection = dropDownSelection;
 		}
 		// Modern Browser
 		else{
@@ -170,7 +189,19 @@
     	// 16 here is the arrow, make this configurable
     	var span = $('<div>').addClass((legacy ? options.legacyOptions.cssPrefix : options.cssPrefix)+'selected-item');
     	span.height(geometry.selectedItem.height).width(geometry.selectedItem.width);
+    	span.css('top',geometry.selectedItem.top).css('left',geometry.selectedItem.left);
     	return span;
+    };
+    var GenerateDropDown = function(geometry, legacy, options, origObject){
+    	var ulString = '<ul class='+ (legacy ? options.legacyOptions.cssPrefix : options.cssPrefix) + 'dropdown-selection' +'>';
+        // Get all of the option elements.
+        $('option',origObject).each(function(index, object){
+        	ulString += '<li data-value="'+$(object).attr('value')+'">'+$(object).html()+'</li>';		
+        });
+        ulString += '</ul>';
+        $ulString = $(ulString);
+        $ulString.width(geometry.dropDownSelection.width).css('top',geometry.dropDownSelection.top).css('left',geometry.dropDownSelection.left);
+        return $ulString;
     };
     // The actual plugin constructor
     function Plugin(element, options) {
@@ -200,8 +231,10 @@
         var wrapper = GenerateWrapper(geometry, legacy, this.options);
         var selectedItemSpan = GenerateSelectedItemSpan(geometry, legacy, this.options);
         var arrow = GenerateArrow(geometry, legacy, this.options);
+        var dropDown = GenerateDropDown(geometry, legacy, this.options, $this);
         wrapper.append(selectedItemSpan);
         wrapper.append(arrow);
+        wrapper.append(dropDown);
         $('body').append(wrapper);
         return $this;
     };

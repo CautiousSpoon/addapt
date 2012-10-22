@@ -28,8 +28,6 @@
 .addapt-legacy-selected-item
 {
 	position: relative;
-	top: 5px;
-	left: 10px;
 	background-color: #ccc;
 	display: block;
 }
@@ -39,4 +37,12 @@
 	background-image: url('../Images/arrow.png');
 	background-color: transparent;
 	cursor: pointer;
+}
+.addapt-legacy-dropdown-selection
+{
+	max-height: 300px;
+	list-style: none;
+	padding: 0px;
+	margin: 0px;
+	position: absolute;
 }
